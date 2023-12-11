@@ -1,0 +1,255 @@
+---
+title: Simulating synthetic data of same form as Milan COVID-19 analysis
+---
+
+From the paper by [Jackson et al.](https://bmjopen.bmj.com/content/12/3/e054859.abstract).
+
+The original data are under strict restrictions, so here we simulate data of the same structure to use for work on statistical methodology. 
+
+
+# Original data structure 
+
+* 27598 people testing positive for SARS-CoV-2 between Feb-Jul 2020 and followed up to Jul 2020 
+
+* Time to either hospital admission, death without hospital admission, or confirmed recovery are recorded.    For those admitted to hospital, dates of ICU admission, death or discharge from hospital are also recorded. 
+
+
+## Predictors 
+
+* Age (originally recorded as continuous, but treated as categorical in the analysis).  Median 64, interquartile range 48 - 82. 
+
+* Sex (45% male)
+
+* Occupational risk status (3 levels): healthcare workers (13%), care home residents (21%), and all others (66%)
+
+* Presence of any comorbidities (only treated as binary in the analysis) (47%)
+
+* Calendar date of onset (continuous, but treated as categorical in the analysis):  February, March, April, May or June.   1588, 14297, 8286, 2590, 837 people respectively.
+
+
+
+
+# Models
+
+Multinomial regression was used to describe the probability $p_r(x)$ that each competing event $r$ (hospital admission, death or recovery) happens first, as a function of covariates $x$. 
+
+The time $T_r$ to the event $r$, given that this is the event that happens first, is modelled with a generalised gamma distribution.   The expected time is related to covariates $x$ with an accelerated failure time model. 
+
+Selected covariates $x$ for each event and time to event, and their coefficients, are listed in Tables 13-17 of the appendix to the paper. 
+
+
+
+# Simulation of synthetic data from the fitted models
+
+## Times to events for baseline covariate category 
+
+Median, lower and upper 95\% quantiles for days to admission, death and recovery, taken from the paper:
+
+```{r}
+library(tidyverse)
+library(flexsurv)
+dat <- tibble(
+  lower = c(0.5, 0.7, 17),
+  median = c(5.5, 9.3, 57),
+  upper = c(38, 48, 131),
+  event = c("adm","death","rec")
+)
+```
+
+Estimate the parameters of a generalised Gamma distribution by a least squares fit to these quantiles.   These parameters refer to the baseline covariate category (age under 45, onset in March, no comorbidities, neither healthcare worker nor care home resident)
+
+```{r}
+p <- c(0.025, 0.5, 0.975)
+ggfit <- function(event){
+  obs <- unlist(dat[dat$event==event,1:3])
+  sumsq <- function(par) sum((qgengamma(p, par[1], exp(par[2]), par[3]) - obs)^2)
+  ggpars <- optim(c(0,0,0), sumsq)$par
+  list(mu=ggpars[1], sigma=exp(ggpars[2]), Q=ggpars[3])
+}
+pars_adm <- ggfit("adm")
+pars_death <- ggfit("death")
+pars_rec <- ggfit("rec")
+
+exec(rgengamma, n=10, !!!pars_adm)
+exec(rgengamma, n=10, !!!pars_death)
+exec(rgengamma, n=10, !!!pars_rec)
+```
+
+
+## Generate population with covariates with roughly same distributions as in paper
+
+enerate age distribution from a gamma distribution with the same median as in the paper.  Make the quantiles narrower than the IQR presented in the paper, to ensure not too many people are over 100. 
+
+```{r}
+set.seed(1)
+p <- c(0.1, 0.5, 0.9)
+obs <- c(48, 64, 82)
+sumsq <- function(par) sum((qgamma(p, exp(par[1]), exp(par[2])) - obs)^2)
+gpars <- optim(c(0,0), sumsq)$par
+pars_age <- list(shape=exp(gpars[1]), rate=exp(gpars[2]))
+```
+
+Generate COVID-19 onset days uniformly within months, given proportion of onsets in each month
+
+
+```{r}
+n <- 27598
+monset <- c(1588,14297,8286,2590,837)
+days <- c(feb=28, mar=31, apr=30, may=31, jun=30)
+days_sim <- sample(1:sum(days), size=n, replace=TRUE, prob=rep(monset, days)) # 1 = feb 1st 
+months_sim <- factor(cut(dat_unif, c(0, cumsum(days)), include.lowest = TRUE), labels=names(days))
+```
+
+Generate sex and comorbidity status independently of all other variables, given the proportions in the paper. 
+
+
+```{r}
+simdat <- tibble(
+  age = exec(rgamma, n=n, !!!pars_age),
+  sex = factor(sample(c("male","female"), n, replace=TRUE, prob=c(45, 55))),
+  comorb = factor(sample(c("no","yes"), n, replace=TRUE, prob=c(53, 47))),
+  day = days_sim,
+  month = relevel(months_sim, "mar")
+) |>
+  mutate(agegroup = cut(age, c(0,45,65,Inf), labels = c("ageu45","age46","age66")))
+```
+
+Generate occupational status given the proportions presented in the paper, assuming care home residents are all over 65, and healthcare workers are all aged 65 or under. 
+
+```{r}
+occs <- c("neither","hcw","chr")
+occ_tab <- round(n*c(66,13,21)/100) |> setNames(occs)
+occ <- factor(sample(occs, n, replace=TRUE, prob=c(66,13,21)), levels=occs)
+age66_ind <- which(simdat$agegroup=="age66")
+chr_inds <- sample(age66_ind, occ_tab["chr"])
+agerest_ind <- which(simdat$agegroup != "age66")
+hcw_inds <- sample(agerest_ind, occ_tab["hcw"])
+simdat$occ <- factor("neither", levels = occs)
+simdat$occ[chr_inds] <- "chr"
+simdat$occ[hcw_inds] <- "hcw"
+head(simdat)
+```
+
+
+
+
+## Determine probability of each outcome for each individual 
+
+To do this, we apply covariate effects to the baseline log odds of events.
+
+Covariate effects are taken from Table 13 of the paper appendix, to produce a probability of each outcome for each individual.
+
+Then sample an event with these probabilities
+
+```{r}
+padm_base <- 0.337 
+pdeath_base <- 0.076
+prec_base <- 1 - padm_base - pdeath_base
+loadm_base <- log(padm_base / prec_base)
+lodeath_base <- log(pdeath_base / prec_base)
+coefs <- read.csv("app_tab13_tidy.csv")
+```
+
+The multinomial logistic regression models used for the two competing outcomes (time to admission, time to death) are then defined as R formula objects.
+
+The "design matrix" for these models is obtained by applying the `model.frame` and  `model.matrix` functions to the simulated data `simdat`.
+
+The linear predictors for the models can then be defined as $X\beta$, where $X$ is the model matrix, and $\beta$ are the coefficients of the regression model.
+
+```{r}
+form_adm <- ~ month + agegroup + sex + occ + comorb + month :agegroup + agegroup:sex + agegroup:occ + month:sex + month:occ
+mf <- model.frame(form_adm,data=simdat)
+Xadm <- model.matrix(form_adm, mf)
+coef_adm <- coefs |> filter(event=="padm") |> select(cov,est) |> 
+  bind_rows(list(cov="(Intercept)",est=loadm_base)) |>
+  slice(match(colnames(Xadm), cov))
+stopifnot(all(coef_adm$cov == colnames(Xadm)))
+oddsadm <- exp(Xadm %*% coef_adm$est)
+
+form_death <- ~ month + agegroup + sex + occ + comorb + agegroup:occ + month:occ
+mf <- model.frame(form_death,data=simdat)
+Xdeath <- model.matrix(form_death, mf)
+coef_death <- coefs |> filter(event=="pdeath") |> select(cov,est) |> 
+  bind_rows(list(cov="(Intercept)",est=lodeath_base)) |>
+  slice(match(colnames(Xdeath), cov))
+stopifnot(all(coef_death$cov == colnames(Xdeath)))
+oddsdeath <- exp(Xdeath %*% coef_death$est)
+```
+
+This gives the odds of admission relative to recovery (odds(admission) = P(admission) / P(recovery)), and the odds of death relative to recovery (odds(death) = P(death) / P(recovery)).
+
+The probability of each event can be determined, given that the probabilities of recovery, admission and death add up to 1.
+
+```{r}
+prec <- 1 / (1 + oddsadm + oddsdeath)
+padm <- oddsadm*prec
+pdeath <- oddsdeath*prec
+stopifnot(all(prec <= 1 & prec >= 0))
+stopifnot(all(padm <= 1 & padm >= 0))
+stopifnot(all(pdeath <= 1 & pdeath >= 0))
+stopifnot(isTRUE(all.equal(as.numeric(prec + padm + pdeath), rep(1, n))))
+pevent <- cbind(recovery=prec, admission=padm, death=pdeath)
+```
+
+A random event is then simulated for each person in the data, with these probabilities.
+```{r}
+events <- c("recovery","admission","death")
+res <- numeric(n)
+for (i in 1:n) # this is actually fast!
+  res[i] <- sample(events, prob=pevent[i,], size=1, replace=TRUE)
+
+simdat$event_true <- factor(res, levels=events) 
+```
+
+
+## Sample times to events 
+
+From generalized gamma models in the paper. 
+
+Apply covariate effects on these first.
+
+Apply censoring at 30 June (150 days after 1 Feb).
+
+```{r}
+form_adm <- ~ agegroup + sex + month + occ + comorb
+mf <- model.frame(form_adm,data=simdat)
+Xadm <- model.matrix(form_adm, mf)
+coef_adm <- coefs |> filter(event=="tadm") |> select(cov,est) |> 
+  bind_rows(list(cov="(Intercept)",est=pars_adm$mu)) |>
+  slice(match(colnames(Xadm), cov))
+stopifnot(all(coef_adm$cov == colnames(Xadm)))
+mu_adm <- Xadm %*% coef_adm$est
+
+form_death <- ~ agegroup + sex + month + occ + comorb
+mf <- model.frame(form_death,data=simdat)
+Xdeath <- model.matrix(form_death, mf)
+coef_death <- coefs |> filter(event=="tdeath") |> select(cov,est) |> 
+  bind_rows(list(cov="(Intercept)",est=pars_death$mu)) |>
+  slice(match(colnames(Xdeath), cov))
+stopifnot(all(coef_death$cov == colnames(Xdeath)))
+mu_death <- Xdeath %*% coef_death$est
+
+form_rec <- ~ agegroup + sex + month + occ + comorb + month:agegroup + occ:agegroup + month:occ
+mf <- model.frame(form_rec,data=simdat)
+Xrec <- model.matrix(form_rec, mf)
+coef_rec <- coefs |> filter(event=="trec") |> select(cov,est) |> 
+  bind_rows(list(cov="(Intercept)",est=pars_rec$mu)) |>
+  slice(match(colnames(Xrec), cov))
+stopifnot(all(coef_rec$cov == colnames(Xrec)))
+mu_rec <- Xrec %*% coef_rec$est
+
+tadm <- rgengamma(n, mu_adm, pars_adm$sigma, pars_adm$Q)
+tdeath <- rgengamma(n, mu_death, pars_death$sigma, pars_death$Q)
+trec <- rgengamma(n, mu_rec, pars_rec$sigma, pars_rec$Q)
+
+simdat <- simdat |>
+  mutate(time_true = if_else(event_true=="death", tdeath, ifelse(event_true=="admission", tadm, trec)),
+         cens = if_else(day + time_true <= 150, "obs", "cens"),
+         event = if_else(cens=="cens", NA, event_true), # ifelse removes factor 
+         time = if_else(cens=="cens", 150, time_true))
+
+saveRDS(simdat, file="data-raw/milansim.rds")
+
+summary(simdat)
+
+```

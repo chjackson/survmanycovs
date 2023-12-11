@@ -1,0 +1,139 @@
+Excluding censoring	Including censoring
+Onset in February	0.57 (0.16)	0.52 (0.15)
+Onset in April	-0.44 (0.08)	-0.43 (0.08)
+Onset in May	-0.92 (0.13)	-0.93 (0.13)
+Onset in June	-1.23 (0.22)	-1.49 (0.21)
+Age 46-65	0.62 (0.07)	0.62 (0.07)
+Age 66+	1.95 (0.09)	1.77 (0.08)
+Male	0.52 (0.07)	0.43 (0.07)
+Care home resident	-1.59 (0.42)	-1.71 (0.41)
+Healthcare worker	-1.53 (0.09)	-1.45 (0.09)
+Any comorbidity	0.55 (0.05)	0.58 (0.05)
+Onset in February, age 46-65	-0.05 (0.18)	-0.03 (0.17)
+Onset in April, age 46-65	-0.46 (0.1)	-0.48 (0.1)
+Onset in May, age 46-65	-0.94 (0.16)	-0.91 (0.16)
+Onset in June, age 46-65	-0.85 (0.31)	-0.75 (0.29)
+Onset in February, age 66+	-0.09 (0.23)	-0.03 (0.22)
+Onset in April, age 66+	-1.07 (0.12)	-1.07 (0.11)
+Onset in May, age 66+	-1.03 (0.17)	-0.87 (0.17)
+Onset in June, age 66+	-1.01 (0.28)	-0.73 (0.27)
+Age 46-65, male	0.47 (0.08)	0.53 (0.08)
+Male, age 66+	0.19 (0.08)	0.28 (0.08)
+Age 46-65, care home resident	-0.38 (0.45)	-0.35 (0.44)
+Age 66+, care home resident	-1.38 (0.42)	-1.18 (0.41)
+Age 46-65, healthcare worker	-0.36 (0.11)	-0.37 (0.11)
+Age 66+, healthcare worker	-0.25 (0.35)	-0.15 (0.35)
+Onset in February, male	-0.21 (0.14)	-0.16 (0.14)
+Onset in April, male	0.03 (0.07)	0.02 (0.07)
+Onset in May, male	-0.19 (0.13)	-0.18 (0.13)
+Onset in June, male	-0.65 (0.23)	-0.61 (0.22)
+Onset in February, care home resident	0.47 (0.42)	0.5 (0.41)
+Onset in April, care home resident	0.82 (0.12)	0.81 (0.11)
+Onset in May, care home resident	0.61 (0.21)	0.52 (0.21)
+Onset in June, care home resident	1.59 (0.43)	1.57 (0.42)
+Onset in February, any comorbidity	-0.14 (0.17)	-0.05 (0.16)
+Onset in April, any comorbidity	-0.08 (0.08)	-0.05 (0.08)
+Onset in May, any comorbidity	-0.43 (0.16)	-0.43 (0.16)
+Onset in June, any comorbidity	1.08 (1.28)	1.26 (1.28)
+Appendix Table 13. Log odds ratios from model for predictors of hospital admission. Odds defined as probability of admission divided by probability of recovery without admission.
+
+	Excluding censoring	Including censoring
+Onset in February	-0.9 (0.3)	-0.8 (0.29)
+Onset in April	-0.88 (0.12)	-0.85 (0.12)
+Onset in May or June	-2.53 (0.29)	-2.41 (0.29)
+Age 66+	5.34 (0.3)	5.19 (0.3)
+Male	0.33 (0.07)	0.33 (0.07)
+Care home resident	3.01 (0.38)	2.9 (0.38)
+Any comorbidity	1.36 (0.37)	1.44 (0.36)
+Age 66+, care home resident	-3.06 (0.39)	-2.88 (0.38)
+Age 66+, any comorbidity	-1.06 (0.37)	-1.11 (0.37)
+Onset in Februrary, care home resident	0.37 (0.6)	0.4 (0.59)
+Onset in April, care home resident	0.26 (0.15)	0.25 (0.14)
+Onset in May or June, care home resident	0.7 (0.33)	0.62 (0.33)
+Appendix Table 14. Log odds ratios from model for predictors of death before hospital admission. Odds defined as probability of death before admission divided by probability of recovery without admission.  (Note: as there were no deaths from onsets in June, the odds rat io for death following onset in June was constrained to be equal to that for May.  Due to the small numbers of deaths in the two age groups below 65, these groups were merged. No deaths before admission were observed among healthcare workers, so this predictor was excluded.)
+
+	Excluding censoring	Including censoring
+Age 46-65	-0.12 (0.03)	-0.12 (0.03)
+Age 66+	0.08 (0.03)	0.07 (0.04)
+Male	0.01 (0.02)	0 (0.02)
+Onset in February	-0.32 (0.03)	-0.32 (0.03)
+Onset in April	0.52 (0.03)	0.53 (0.03)
+Onset in May	1.07 (0.06)	1.08 (0.06)
+Onset in June	1.32 (0.11)	1.25 (0.11)
+Healthcare worker	0.14 (0.05)	0.15 (0.05)
+Care home resident	-0.4 (0.05)	-0.38 (0.05)
+Any comorbidity	0.1 (0.02)	0.1 (0.02)
+Appendix Table 15. Predictors in selected model for time from COVID-19 onset to hospital admission. Each row represents a covariate effect (main effect or interaction term), defined as the ratio of the expected time to admission with, versus without, the indicated covariate.
+
+	Excluding censoring	Including censoring
+Age 66+	-0.12 (0.18)	-0.15 (0.17)
+Male	0.1 (0.06)	0.09 (0.06)
+Onset in February	-0.8 (0.22)	-0.79 (0.22)
+Onset in April	0.07 (0.06)	0.07 (0.06)
+Onset in May or June	0.04 (0.12)	0.04 (0.12)
+Care home resident	-0.36 (0.06)	-0.36 (0.06)
+Any comorbidity	0.04 (0.06)	0.04 (0.06)
+Appendix Table 16. Predictors in selected model for time from COVID-19 onset to death without hospital admission.  Each row represents a covariate effect (main effect or interaction term), defined as the ratio of the expected time to death with, versus without, the indicated covariate.
+ 
+	Excluding censoring	Including censoring
+Any comorbidity	-0.03 (0.01)	-0.05 (0.01)
+Male	-0.05 (0.01)	-0.02 (0.01)
+Onset in February	0.31 (0.12)	-0.06 (0.04)
+Onset in April	-0.14 (0.06)	-0.3 (0.02)
+Onset in May	-0.95 (0.07)	-0.69 (0.02)
+Onset in June	-1.78 (0.12)	-0.87 (0.03)
+Healthcare worker	-0.3 (0.02)	-0.32 (0.02)
+Care home resident	-0.09 (0.09)	0.02 (0.07)
+Age 46-65	-0.14 (0.04)	-0.02 (0.01)
+Age 66+	-0.11 (0.06)	0.15 (0.02)
+Onset in February (age 46-65)	0.28 (0.15)	0.11 (0.06)
+Onset in April (age 46-65)	0.03 (0.08)	0.03 (0.02)
+Onset in May (age 46-65)	0.16 (0.09)	-0.05 (0.03)
+Onset in June (age 46-65)	0.04 (0.19)	-0.1 (0.05)
+Onset in February (age 66+)	-0.2 (0.2)	0.19 (0.07)
+Onset in April (age 66+)	-0.37 (0.08)	0.06 (0.02)
+Onset in May (age 66+)	0.59 (0.1)	0.05 (0.03)
+Onset in June (age 66+)	0.38 (0.15)	-0.34 (0.05)
+Healthcare worker, age 46-65	-0.03 (0.02)	-0.04 (0.02)
+Healthcare worker, age 66+	-0.34 (0.1)	-0.43 (0.11)
+Care home resident, age 46-65	0.31 (0.1)	0.22 (0.08)
+Care home resident, age 66+	0.19 (0.09)	0.06 (0.07)
+Onset in February (healthcare worker)	0.27 (0.07)	0.3 (0.06)
+Onset in April (healthcare worker)	0.05 (0.03)	0.03 (0.03)
+Onset in May (healthcare worker)	0.21 (0.04)	0.15 (0.04)
+Onset in June (healthcare worker)	0.24 (0.07)	0.07 (0.1)
+Appendix Table 17.  Predictors in selected model for time from COVID-19 onset to confirmed recovery (second of two negative tests). Each row represents a covariate effect (main effect or interaction term), defined as the ratio of the expected time to confirmed recovery with, versus without, the indicated covariate.
+
+Non care-home residents
+	Men	Women
+Age 0-45	0 (0, 0.01)	0 (0, 0.01)
+Age 46-65	0 (0, 0)	0 (0, 0.01)
+Age 66-75	0.03 (0.02, 0.04)	0.02 (0.01, 0.03)
+Age 76-85	0.06 (0.05, 0.08)	0.06 (0.04, 0.07)
+Age 86+	0.15 (0.12, 0.18)	0.12 (0.1, 0.15)
+Care-home residents
+Age 0-45	0.03 (0, 0.23)	0.07 (0.01, 0.43)
+Age 46-65	0.04 (0.02, 0.09)	0.09 (0.04, 0.19)
+Age 66-75	0.22 (0.15, 0.3)	0.17 (0.11, 0.25)
+Age 76-85	0.26 (0.21, 0.32)	0.24 (0.19, 0.29)
+Age 86+	0.36 (0.3, 0.42)	0.31 (0.27, 0.36)
+Appendix Table 18.  Estimated probabilities of death before hospital admission by age group (using a finer classification) and care home residency, for people without comorbidities and onset in March 2020. 
+
+# baseline probs for the MN model: Female, March, age under 45, occ regular
+7.6 % prob death without hosp
+33.7% prob hosp adm
+
+# TTEs - can infer at least 2 pars of GG dist
+Days to hosp: 5.5 (qi 0.5 to 38)
+Days to death wo adm 9.3 (qi 0.7 to 48)
+Days to rec 57 (qi 17-131)
+
+
+
+App table 2, events by month of onset
+Admission	Death	Confirmed recovery	Unknown   TOTAL 
+feb 1143 (72%)	20 (1%)	380 (24%)	45 (3%)	1588
+mar 7971 (56%)	607 (4%)	5058 (35%)	661 (5%)	14297
+apr 2126 (26%)	733 (9%)	4703 (57%)	724 (9%)	8286
+may 404 (16%)	71 (3%)	1859 (72%)	256 (10%)   2590
+june 102 (12%)	0 (0%)	541 (65%)	194 (23%)   837
